@@ -8,8 +8,9 @@ public class AudioManager : MonoBehaviour
     private static AudioManager _instance;
     AudioSource ambient;
     AudioSource effects;
+    AudioSource fly;
     AudioMixer mixer;
-    public static AudioManager instance 
+    public static AudioManager instance
     {
         get
         {
@@ -27,33 +28,53 @@ public class AudioManager : MonoBehaviour
         _instance = this;
         ambient = gameObject.AddComponent<AudioSource>();
         effects = gameObject.AddComponent<AudioSource>();
+        fly = gameObject.AddComponent<AudioSource>();
 
         mixer = Resources.Load("AudioMixer") as AudioMixer;
 
         ambient.outputAudioMixerGroup = mixer.FindMatchingGroups("Ambient")[0];
         effects.outputAudioMixerGroup = mixer.FindMatchingGroups("Effects")[0];
+        fly.outputAudioMixerGroup = mixer.FindMatchingGroups("Fly")[0];
     }
-
+    public void ActivateIndoor()
+    {
+        effects.outputAudioMixerGroup.audioMixer.FindSnapshot("indoor").TransitionTo(0.2f);
+    }
+    public void ActivateOutdoor()
+    {
+        effects.outputAudioMixerGroup.audioMixer.FindSnapshot("outdoor").TransitionTo(0.2f);
+    }
     void Start()
     {
-        
+
     }
 
     void Update()
     {
-        
+
     }
-    public void PlaySound() 
+    public void PlaySound()
     {
         print("Pisadas");
     }
-    public void PlayEffect(AudioClip clip) 
+    public void PlayEffect(AudioClip clip)
     {
         effects.PlayOneShot(clip);
     }
     public void PlayEffect(List<AudioClip> clip)
     {
-        effects.PlayOneShot(clip[Random.Range(0,clip.Count)]);
+        effects.PlayOneShot(clip[Random.Range(0, clip.Count)]);
+    }
+    public void PlayEffectFly(AudioClip clip)
+    {
+        fly.Play();
+        fly.PlayOneShot(clip);
+        fly.loop = true;
+    }
+    public void StopEffectFly() 
+    {
+        fly.loop = false;
+        fly.Stop();
     }
     public void PlayAmbient(AudioClip clip) 
     {

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 
 // FlyBehaviour inherits from GenericBehaviour. This class corresponds to the flying behaviour.
 public class FlyBehaviour : GenericBehaviour
@@ -8,10 +9,10 @@ public class FlyBehaviour : GenericBehaviour
 	public float sprintFactor = 2.0f;             // How much sprinting affects fly speed.
 	public float flyMaxVerticalAngle = 60f;       // Angle to clamp camera vertical movement when flying.
 
-	private int flyBool;                          // Animator variable related to flying.
+	public int flyBool;                          // Animator variable related to flying.
 	private bool fly = false;                     // Boolean to determine whether or not the player activated fly mode.
 	private CapsuleCollider col;                  // Reference to the player capsulle collider.
-
+	public AudioClip flyClip;
 	// Start is always called after any Awake functions.
 	void Start()
 	{
@@ -40,11 +41,13 @@ public class FlyBehaviour : GenericBehaviour
 			// Player is flying.
 			if (fly)
 			{
+				AudioManager.instance.PlayEffectFly(flyClip);
 				// Register this behaviour.
 				behaviourManager.RegisterBehaviour(this.behaviourCode);
 			}
 			else
 			{
+				AudioManager.instance.StopEffectFly();
 				// Set collider direction to vertical.
 				col.direction = 1;
 				// Set camera default offset.

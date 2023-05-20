@@ -27,8 +27,8 @@ public class BasicBehaviour : MonoBehaviour
 	private Rigidbody rBody;                              // Reference to the player's rigidbody.
 	private int groundedBool;                             // Animator variable related to whether or not the player is on the ground.
 	private Vector3 colExtents;   
-	public LayerMask currentFloorLayer;
-	public List<LayerMask> grounds;
+	public int currentFloorLayer;
+	public List<int> grounds;
 	// Collider extents for ground test. 
 
 	// Get current horizontal and vertical axes.
@@ -49,6 +49,7 @@ public class BasicBehaviour : MonoBehaviour
 
 	void Awake ()
 	{
+		Cursor.lockState = CursorLockMode.Locked;
 		// Set up the references.
 		behaviours = new List<GenericBehaviour> ();
 		overridingBehaviours = new List<GenericBehaviour>();
@@ -68,8 +69,6 @@ public class BasicBehaviour : MonoBehaviour
 		// Store the input axes.
 		h = Input.GetAxis("Horizontal");
 		v = Input.GetAxis("Vertical");
-
-		print(h);
 		 
 		// Set the input axes on the Animator Controller.
 		anim.SetFloat(hFloat, h, 0.1f, Time.deltaTime);
@@ -326,15 +325,15 @@ public class BasicBehaviour : MonoBehaviour
 	// Function to tell whether or not the player is on ground.
 	public bool IsGrounded()
 	{
+
 		Ray ray = new Ray(this.transform.position + Vector3.up * 2 * colExtents.x, Vector3.down);
         foreach (RaycastHit hit in Physics.SphereCastAll(ray, colExtents.x, colExtents.x + 0.2f))
         {
-			int realLayer = hit.collider.gameObject.layer;
-			float layer = Mathf.Pow(2f,(hit.collider.gameObject.layer)) ;
+			int layer = hit.collider.gameObject.layer;
 
 			if (grounds.Contains((int)layer))
 			{
-				currentFloorLayer = realLayer;
+				currentFloorLayer = (int)layer;
 				return true;
 			}
         }

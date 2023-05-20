@@ -28,6 +28,8 @@ public class MoveBehaviour : GenericBehaviour
 		behaviourManager = GetComponent<BasicBehaviour>();
 		footStepsAudios[LayerMask.NameToLayer("Wood")] = new List<AudioClip>();
 		footStepsAudios[LayerMask.NameToLayer("Wood")].AddRange(Resources.LoadAll<AudioClip>("Audios/Player/FootSteps/Wood"));
+		footStepsAudios[LayerMask.NameToLayer("Sand")] = new List<AudioClip>();
+		footStepsAudios[LayerMask.NameToLayer("Sand")].AddRange(Resources.LoadAll<AudioClip>("Audios/Player/FootSteps/Sand"));
 		footStepsAudios[LayerMask.NameToLayer("Grass")] = new List<AudioClip>();
 		footStepsAudios[LayerMask.NameToLayer("Grass")].AddRange(Resources.LoadAll<AudioClip>("Audios/Player/FootSteps/Grass"));
 	}
@@ -76,8 +78,7 @@ public class MoveBehaviour : GenericBehaviour
 			behaviourManager.LockTempBehaviour(this.behaviourCode);
 			behaviourManager.GetAnim.SetBool(jumpBool, true);
 			// Is a locomotion jump?
-			if (behaviourManager.GetAnim.GetFloat(speedFloat) > 0.1)
-			{
+			
 				// Temporarily change player friction to pass through obstacles.
 				GetComponent<CapsuleCollider>().material.dynamicFriction = 0f;
 				GetComponent<CapsuleCollider>().material.staticFriction = 0f;
@@ -87,7 +88,6 @@ public class MoveBehaviour : GenericBehaviour
 				float velocity = 2f * Mathf.Abs(Physics.gravity.y) * jumpHeight;
 				velocity = Mathf.Sqrt(velocity);
 				behaviourManager.GetRigidBody.AddForce(Vector3.up * velocity, ForceMode.VelocityChange);
-			}
 		}
 		// Is already jumping?
 		else if (behaviourManager.GetAnim.GetBool(jumpBool))
@@ -139,8 +139,8 @@ public class MoveBehaviour : GenericBehaviour
 		{
 			speed = sprintSpeed;
 		}
-
-		behaviourManager.GetAnim.SetFloat(speedFloat, speed, speedDampTime, Time.deltaTime);
+		//behaviourManager.GetRigidBody.AddForce(transform.forward * 100000/ 2 * speed);
+		behaviourManager.GetAnim.SetFloat("Speed", speed);
 	}
 
 	// Remove vertical rigidbody velocity.
@@ -203,6 +203,10 @@ public class MoveBehaviour : GenericBehaviour
 	}
 	public void PlayFootSteps() 
 	{
+		
+ 	if (!footStepsAudios.ContainsKey(behaviourManager.currentFloorLayer) || behaviourManager.GetComponent<FlyBehaviour>().GetComponent<Animator>().GetBool("Fly"))
+			return;
+		print("Pisadas");
         AudioManager.instance.PlayEffect(footStepsAudios[behaviourManager.currentFloorLayer]);
 	}
 
